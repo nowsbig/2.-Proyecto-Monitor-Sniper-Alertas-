@@ -1,20 +1,24 @@
 import json, time, requests
-from api_cliente import obtener_precio_kraken
+from api_cliente import MonitorSniper
 from alertas import evaluar_precio
 
-print("\nIniciando Monitor Sniper...")
+monitor_btc = MonitorSniper("XXBTZUSD")
+monitor_eth = MonitorSniper("XETHZUSD")
+
+precio_btc = monitor_btc.check_price()
+precio_eth = monitor_eth.check_price()
 
 while True:
-    precio = obtener_precio_kraken('XXBTZUSD')
-    precio_filtrado = precio['result']['XXBTZUSD']['a'][0]
+    precio_btc = monitor_btc.check_price()
+    precio_eth = monitor_eth.check_price()
 
-    try:
-        if precio is not None:
-            precio_actual = float(precio_filtrado)
-            print(f"\nPrecio: {precio_actual:.2f}")
-            time.sleep(60)
-        else:
-            print("No se pudo obtener el precio. Reintentando en 60 segundos...")
-    except:
-        print("Esperando 60 segundos por reconexión...")
-        time.sleep(60)
+    if precio_btc and precio_eth is not None:
+        print(f"\nPrecio BTC: {precio_btc}")
+        print(f"Precio ETH: {precio_eth}")
+        time.sleep(60)  # Esperar 60 segundos antes de la siguiente verificación
+    else:
+        print("Error al obtener el precio de uno o ambos activos.")
+
+    time.sleep(10)  # Esperar 10 segundos antes de la siguiente verificación
+print(f"Precio BTC: {precio_btc}")
+print(f"Precio ETH: {precio_eth}")
